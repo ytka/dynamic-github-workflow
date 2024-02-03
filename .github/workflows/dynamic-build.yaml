@@ -16,6 +16,19 @@ jobs:
             proj1: proj1/**
             proj2: proj2/**
 
+  static-build:
+    needs: static-changes
+    if: needs.static-changes.outputs.projects != '[]'
+    strategy:
+      matrix:
+        project: ${{ fromJSON(needs.static-changes.outputs.projects) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Building ${{ matrix.project }}"
+      - run: make
+        working-directory: ${{ matrix.project }}
+
   dynamic-changes:
     environment:
       name: debug
@@ -35,21 +48,7 @@ jobs:
           changed: ${{steps.filter.outputs.changed_files}}
         run: |
           projects="$(echo $changed | jq -r '.[]' | cut -d'/' -f1 | sort | uniq)"
-          echo "projects=${changes}" >> $GITHUB_OUTPUT
-          
-
-  static-build:
-    needs: static-changes
-    if: needs.static-changes.outputs.projects != '[]'
-    strategy:
-      matrix:
-        project: ${{ fromJSON(needs.static-changes.outputs.projects) }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: echo "Building ${{ matrix.project }}"
-      - run: make
-        working-directory: ${{ matrix.project }}
+          echo "projects=${projects}" >> $GITHUB_OUTPUT
 
   dynamic-build:
     environment:
