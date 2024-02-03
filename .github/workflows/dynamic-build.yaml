@@ -18,7 +18,7 @@ jobs:
 
   dynamic-changes:
     outputs:
-      changes: ${{ steps.changes.outputs.changes }}
+      projects: ${{ steps.changes.outputs.projects }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,9 +31,9 @@ jobs:
       - id: changes
         env:
           changed: ${{steps.filter.outputs.changed_files}}
-        run: | 
-          changes="$(echo $changed | jq -r '.[]' | cut -d'/' -f1 | sort | uniq)"
-          echo "changes=${changes}" >> $GITHUB_OUTPUT
+        run: |
+          projects="$(echo $changed | jq -r '.[]' | cut -d'/' -f1 | sort | uniq)"
+          echo "projects=${changes}" >> $GITHUB_OUTPUT
           
 
   build:
@@ -51,7 +51,13 @@ jobs:
 
   build2:
     needs: dynamic-changes
-    if: needs.dynamic-changes.outputs.changes != '[]'
+    if: needs.dynamic-changes.outputs.projects != '[]'
+    strategy:
+      matrix:
+        project: ${{ needs.dynamic-changes.outputs.projects }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Building ${{ needs.dynamic-changes.outputs.changes }}"
+      - uses: actions/checkout@v4
+      - run: echo "Building ${{ matrix.project }}"
+      - run: make
+        working-directory: ${{ matrix.project }}
