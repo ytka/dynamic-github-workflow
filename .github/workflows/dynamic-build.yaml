@@ -1,0 +1,29 @@
+name: Dynamic Workflow
+on:
+  workflow_dispatch:
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.filter.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            proj1: proj1/**
+            proj2: proj2/**
+
+  build:
+    needs: changes
+    strategy:
+      matrix:
+        project: ${{ fromJSON(needs.changes.outputs.projects) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Building ${{ matrix.project }}"
+      - run: make
+        working-directory: ${{ matrix.project }}
