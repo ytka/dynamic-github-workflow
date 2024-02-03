@@ -25,7 +25,7 @@ jobs:
         with:
           list-files: json
           filters: |
-            changed: '**'
+            changed: 'proj*/**'
       - env:
           changed: ${{steps.filter.outputs.changed_files}}
         run: echo $changed
