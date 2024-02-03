@@ -48,3 +48,10 @@ jobs:
       - run: echo "Building ${{ matrix.project }}"
       - run: make
         working-directory: ${{ matrix.project }}
+
+  build2:
+    needs: dynamic-changes
+    if: needs.dynamic-changes.outputs.changes != '[]'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Building ${{ needs.dynamic-changes.outputs.changes }}"
