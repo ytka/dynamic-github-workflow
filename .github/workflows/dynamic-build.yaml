@@ -26,8 +26,8 @@ jobs:
           filters: |
             projects: 'proj*/**'
       - env:
-          changed: ${{steps.filter.outputs.changed}}
-        run: echo $changed
+          changes: ${{steps.filter.outputs.changes}}
+        run: echo changes
 
   build:
     needs: changes
