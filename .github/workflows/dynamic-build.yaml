@@ -27,7 +27,7 @@ jobs:
         with:
           list-files: shell
           filters: |
-            target: */**
+            changed: **
 
   build:
     needs: changes
@@ -46,4 +46,4 @@ jobs:
     runs-on: ubuntu-latest
     needs: dynamic-changes
     steps:
-      - run: echo "Building ${{ needs.dynamic-changes.outputs.target_files }}"
+      - run: echo "Building ${{ needs.dynamic-changes.outputs.changed_files }}"
