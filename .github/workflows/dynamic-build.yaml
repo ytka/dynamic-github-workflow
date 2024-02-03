@@ -4,9 +4,9 @@ on:
 
 jobs:
   changes:
-    runs-on: ubuntu-latest
     outputs:
       projects: ${{ steps.filter.outputs.changes }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -17,6 +17,8 @@ jobs:
             proj2: proj2/**
 
   dynamic-changes:
+    outputs:
+      changes: ${{ steps.changes.outputs.changes }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,9 +28,13 @@ jobs:
           list-files: json
           filters: |
             changed: 'proj*/**'
-      - env:
+      - id: changes
+        env:
           changed: ${{steps.filter.outputs.changed_files}}
-        run: echo $changed
+        run: | 
+          changes="$(echo $changed | jq -r '.[]' | cut -d'/' -f1 | sort | uniq)"
+          echo "changes=${changes}" >> $GITHUB_OUTPUT
+          
 
   build:
     needs: changes
