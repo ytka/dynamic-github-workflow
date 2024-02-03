@@ -54,7 +54,7 @@ jobs:
     if: needs.dynamic-changes.outputs.projects != '[]'
     strategy:
       matrix:
-        project: ${{ needs.dynamic-changes.outputs.projects }}
+        project: ${{ fromJSON(needs.dynamic-changes.outputs.projects) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
