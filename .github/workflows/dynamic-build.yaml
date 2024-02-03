@@ -23,11 +23,12 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
+          list-files: json
           filters: |
-            projects: 'proj*/**'
+            changed: '**'
       - env:
-          changes: ${{steps.filter.outputs.changes}}
-        run: echo changes
+          changed: ${{steps.filter.outputs.changed_files}}
+        run: echo $changed
 
   build:
     needs: changes
