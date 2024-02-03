@@ -18,8 +18,6 @@ jobs:
 
   dynamic-changes:
     runs-on: ubuntu-latest
-    outputs:
-      projects: ${{ steps.filter.outputs.changes }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -28,6 +26,9 @@ jobs:
           list-files: shell
           filters: |
             changed: '**'
+      - env:
+          changed: ${{steps.filter.outputs.changed_files}}
+        run: echo $changed
 
   build:
     needs: changes
@@ -41,9 +42,3 @@ jobs:
       - run: echo "Building ${{ matrix.project }}"
       - run: make
         working-directory: ${{ matrix.project }}
-
-  build2:
-    runs-on: ubuntu-latest
-    needs: dynamic-changes
-    steps:
-      - run: echo "Building ${{ needs.dynamic-changes.outputs.changed_files }}"
