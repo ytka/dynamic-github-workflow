@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  changes:
+  static-changes:
     outputs:
       projects: ${{ steps.filter.outputs.changes }}
     runs-on: ubuntu-latest
@@ -36,12 +36,12 @@ jobs:
           echo "projects=${changes}" >> $GITHUB_OUTPUT
           
 
-  build:
-    needs: changes
-    if: needs.changes.outputs.projects != '[]'
+  static-build:
+    needs: static-changes
+    if: needs.static-changes.outputs.projects != '[]'
     strategy:
       matrix:
-        project: ${{ fromJSON(needs.changes.outputs.projects) }}
+        project: ${{ fromJSON(needs.static-changes.outputs.projects) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49,7 +49,7 @@ jobs:
       - run: make
         working-directory: ${{ matrix.project }}
 
-  build2:
+  dynamic-build:
     needs: dynamic-changes
     if: needs.dynamic-changes.outputs.projects != '[]'
     strategy:
