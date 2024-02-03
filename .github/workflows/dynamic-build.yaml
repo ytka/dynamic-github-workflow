@@ -3,6 +3,9 @@ on:
   workflow_dispatch:
 
 jobs:
+  environment:
+    name: debug
+
   static-changes:
     outputs:
       projects: ${{ steps.filter.outputs.changes }}
