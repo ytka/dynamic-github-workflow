@@ -27,7 +27,7 @@ jobs:
         with:
           list-files: shell
           filters: |
-            changed: **
+            changed: '**'
 
   build:
     needs: changes
