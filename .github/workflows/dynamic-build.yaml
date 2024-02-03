@@ -3,9 +3,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  environment:
-    name: debug
-
   static-changes:
     outputs:
       projects: ${{ steps.filter.outputs.changes }}
@@ -20,6 +17,8 @@ jobs:
             proj2: proj2/**
 
   dynamic-changes:
+    environment:
+      name: debug
     outputs:
       projects: ${{ steps.changes.outputs.projects }}
     runs-on: ubuntu-latest
@@ -53,6 +52,8 @@ jobs:
         working-directory: ${{ matrix.project }}
 
   dynamic-build:
+    environment:
+      name: debug
     needs: dynamic-changes
     if: needs.dynamic-changes.outputs.projects != '[]'
     strategy:
